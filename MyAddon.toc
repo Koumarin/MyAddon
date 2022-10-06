@@ -1,0 +1,7 @@
+## Title: My Addon
+## Notes:
+## Interface: 50400
+## Version: 1.0.0
+## Author: Koumarin
+
+main.lua
