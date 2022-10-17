@@ -25,6 +25,7 @@ function f:BAG_UPDATE(event, bagSlot)
 				--print("Looking at bag:", newBag)
 				if select(1, GetContainerNumFreeSlots(newBag - 19)) > 0 then
 					--print("Found free bag for it:", newBag)
+					C_NewItems.RemoveNewItem(bagSlot, i)
 					PickupContainerItem(bagSlot, i)
 					PutItemInBag(newBag)
 					return
