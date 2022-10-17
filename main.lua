@@ -11,5 +11,35 @@ function f:ADDON_LOADED(event, addonName)
 	end
 end
 
-f:RegisterEvent("ADDON_LOADED")
+function f:BAG_UPDATE(event, bagSlot)
+	if CursorHasItem() or SpellIsTargeting() then
+		print("Cursor busy, can't loot to leftmost.")
+		return
+	end
+
+	for i = 0, GetContainerNumSlots(bagSlot), 1 do
+		if C_NewItems.IsNewItem(bagSlot, i) then
+			print("Looted:", select(7, GetContainerItemInfo(bagSlot, i)), ".")
+
+			for newBag = 23, 20, -1 do
+				print("Looking at bag:", newBag)
+				if select(1, GetContainerNumFreeSlots(newBag - 19)) > 0 then
+					print("Found free bag for it:", newBag)
+					PickupContainerItem(bagSlot, i)
+					PutItemInBag(newBag)
+					return
+				end
+			end
+		end
+	end
+end
+
+local events = {
+	"ADDON_LOADED",
+	"BAG_UPDATE"
+}
+
+for _, event in ipairs(events) do
+	f:RegisterEvent(event)
+end
 f:SetScript("OnEvent", f.OnEvent)
