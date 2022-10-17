@@ -19,12 +19,12 @@ function f:BAG_UPDATE(event, bagSlot)
 
 	for i = 0, GetContainerNumSlots(bagSlot), 1 do
 		if C_NewItems.IsNewItem(bagSlot, i) then
-			print("Looted:", select(7, GetContainerItemInfo(bagSlot, i)), ".")
+			--print("Looted:", select(7, GetContainerItemInfo(bagSlot, i)), ".")
 
 			for newBag = 23, 20, -1 do
-				print("Looking at bag:", newBag)
+				--print("Looking at bag:", newBag)
 				if select(1, GetContainerNumFreeSlots(newBag - 19)) > 0 then
-					print("Found free bag for it:", newBag)
+					--print("Found free bag for it:", newBag)
 					PickupContainerItem(bagSlot, i)
 					PutItemInBag(newBag)
 					return
