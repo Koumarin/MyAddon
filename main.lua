@@ -22,8 +22,15 @@ function f:BAG_UPDATE(event, bagSlot)
 			--print("Looted:", select(7, GetContainerItemInfo(bagSlot, i)), ".")
 
 			for newBag = 23, 20, -1 do
+				local bagID = newBag - 19
 				--print("Looking at bag:", newBag)
-				if select(1, GetContainerNumFreeSlots(newBag - 19)) > 0 then
+				-- If we'd put the item in a bag that is to the right of the
+				-- current one, just abort.
+				if bagID < bagSlot then
+					return
+				-- Otherwise we check if the bag has free slots to put
+				-- the new item in.
+				elseif select(1, GetContainerNumFreeSlots(bagID)) > 0 then
 					--print("Found free bag for it:", newBag)
 					C_NewItems.RemoveNewItem(bagSlot, i)
 					PickupContainerItem(bagSlot, i)
