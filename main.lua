@@ -12,6 +12,8 @@ function f:ADDON_LOADED(event, addonName)
 end
 
 function f:BAG_UPDATE(event, bagSlot)
+	local lootNum = 0                  -- Number of looted items this update.
+
 	if CursorHasItem() or SpellIsTargeting() then
 		print("Cursor busy, can't loot to leftmost.")
 		return
@@ -19,7 +21,9 @@ function f:BAG_UPDATE(event, bagSlot)
 
 	for i = 0, GetContainerNumSlots(bagSlot), 1 do
 		if C_NewItems.IsNewItem(bagSlot, i) then
-			--print("Looted:", select(7, GetContainerItemInfo(bagSlot, i)), ".")
+			local itemLink = select(7, GetContainerItemInfo(bagSlot, i))
+			C_NewItems.RemoveNewItem(bagSlot, i)
+			print("Looted:", itemLink, ".")
 
 			for newBag = 23, 20, -1 do
 				local bagID = newBag - 19
@@ -27,19 +31,25 @@ function f:BAG_UPDATE(event, bagSlot)
 				-- If we'd put the item in a bag that is to the right of the
 				-- current one, just abort.
 				if bagID < bagSlot then
-					return
+					break
 				-- Otherwise we check if the bag has free slots to put
 				-- the new item in.
-				elseif select(1, GetContainerNumFreeSlots(bagID)) > 0 then
-					--print("Found free bag for it:", newBag)
+				elseif f:CanPlaceInBag(itemLink, bagID, lootNum) then
 					C_NewItems.RemoveNewItem(bagSlot, i)
 					PickupContainerItem(bagSlot, i)
 					PutItemInBag(newBag)
-					return
+					break
 				end
 			end
+
+			lootNum = lootNum + 1
 		end
 	end
+end
+
+function f:CanPlaceInBag(item, bagID, lootNum)
+	local freeSlots, itemFamily = GetContainerNumFreeSlots(bagID)
+	return freeSlots > lootNum and bit.band(itemFamily, GetItemFamily(item))
 end
 
 local events = {
