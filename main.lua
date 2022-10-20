@@ -55,8 +55,13 @@ end
 end
 
 function f:CanPlaceInBag(item, bagID, lootNum)
-	local freeSlots, itemFamily = GetContainerNumFreeSlots(bagID)
-	return freeSlots > lootNum and bit.band(itemFamily, GetItemFamily(item))
+	local freeSlots  = GetContainerNumFreeSlots(bagID)
+	local bagFamily  = GetItemFamily(GetBagName(bagID))
+	local itemFamily = GetItemFamily(item)
+	-- We check if there is free space in the bag and if the bag actually
+	-- allows us to place the item we want to put in there.
+	return freeSlots > lootNum
+	       and (bagFamily == 0 or bit.band(bagFamily, itemFamily) ~= 0)
 end
 
 local events = {
