@@ -49,11 +49,6 @@ function f:BAG_UPDATE(event, bagSlot)
 	end
 end
 
-			lootNum = lootNum + 1
-		end
-	end
-end
-
 function f:CanPlaceInBag(item, bagID, lootNum)
 	local freeSlots  = GetContainerNumFreeSlots(bagID)
 	local bagFamily  = GetItemFamily(GetBagName(bagID))
