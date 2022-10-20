@@ -12,7 +12,7 @@ function f:ADDON_LOADED(event, addonName)
 end
 
 function f:BAG_UPDATE(event, bagSlot)
-	local lootNum = 0                  -- Number of looted items this update.
+	local lootNum = {0, 0, 0, 0, 0}    -- No of looted items/bag this update.
 
 	if CursorHasItem() or SpellIsTargeting() then
 		print("Cursor busy, can't loot to leftmost.")
@@ -27,20 +27,27 @@ function f:BAG_UPDATE(event, bagSlot)
 
 			for newBag = 23, 20, -1 do
 				local bagID = newBag - 19
-				--print("Looking at bag:", newBag)
+
 				-- If we'd put the item in a bag that is to the right of the
-				-- current one, just abort.
-				if bagID < bagSlot then
+				-- current one, or in the current one, we just abort.
+				if bagID <= bagSlot then
 					break
-				-- Otherwise we check if the bag has free slots to put
-				-- the new item in.
-				elseif f:CanPlaceInBag(itemLink, bagID, lootNum) then
+				-- Otherwise we try to place it in the new bag.
+				elseif f:CanPlaceInBag(itemLink, bagID, lootNum[bagID]) then
+					-- GetContainerNumFreeSlots() doesn't seem to update
+					-- inbetween calls in a single update, so we need to
+					-- keep track of how much we looted this update so we put
+					-- items in the correct bags.
+					lootNum[bagID] = lootNum[bagID] + 1
 					C_NewItems.RemoveNewItem(bagSlot, i)
 					PickupContainerItem(bagSlot, i)
 					PutItemInBag(newBag)
 					break
 				end
 			end
+		end
+	end
+end
 
 			lootNum = lootNum + 1
 		end
