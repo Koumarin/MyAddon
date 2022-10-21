@@ -1,5 +1,7 @@
 local f = CreateFrame("Frame")
 
+local bagFreeSlots = {}
+
 function f:OnEvent(event, ...)
 	self[event](self, event, ...)
 end
@@ -8,12 +10,21 @@ function f:ADDON_LOADED(event, addonName)
 	if addonName == "MyAddon" then
 		-- Disable profanity filter.
 		BNSetMatureLanguageFilter(false)
+		-- We read the free slots in each bag, so we can keep track of
+		-- new items and place looted bags, and so on.
+		for i = 0, 4, 1 do
+			bagFreeSlots[i] = GetContainerFreeSlots(i)
+		end
 	end
 end
 
 function f:BAG_UPDATE(event, bagSlot)
 	local lootNum = {0, 0, 0, 0, 0}    -- No of looted items/bag this update.
 
+	if bagFreeSlots[bagSlot] then
+		wipe(bagFreeSlots[bagSlot])
+	end
+	bagFreeSlots[bagSlot] = GetContainerFreeSlots(bagSlot)
 	-- If the bag that received an update is a profession bag, we know that
 	-- the item is in its correct place. Profession bags have higher priority.
 	if f:IsProfessionBag(bagSlot) then
@@ -76,6 +87,15 @@ end
 
 function f:IsProfessionBag(bagID)
 	return 0 ~= f:GetBagItemFamily(bagID)
+end
+
+function f:ElementInTable(element, table)
+	for _, value in ipairs(table) do
+		if value == element then
+			return true
+		end
+	end
+	return false
 end
 
 function f:GetBagItemFamily(bagID)
