@@ -14,6 +14,12 @@ end
 function f:BAG_UPDATE(event, bagSlot)
 	local lootNum = {0, 0, 0, 0, 0}    -- No of looted items/bag this update.
 
+	-- If the bag that received an update is a profession bag, we know that
+	-- the item is in its correct place. Profession bags have higher priority.
+	if f:IsProfessionBag(bagSlot) then
+		return
+	end
+
 	if CursorHasItem() or SpellIsTargeting() then
 		print("Cursor busy, can't loot to leftmost.")
 		return
@@ -58,7 +64,7 @@ end
 
 function f:CanPlaceInBag(item, bagID, lootNum)
 	local freeSlots  = GetContainerNumFreeSlots(bagID)
-	local bagFamily  = GetItemFamily(GetBagName(bagID))
+	local bagFamily  = f:GetBagItemFamily(bagID)
 	local itemFamily = GetItemFamily(item)
 	-- We check if there is free space in the bag and if the bag actually
 	-- allows us to place the item we want to put in there.
@@ -68,6 +74,14 @@ end
 
 function f:IsBag(itemID)
 	return "INVTYPE_BAG" == select(9, GetItemInfo(itemID))
+end
+
+function f:IsProfessionBag(bagID)
+	return 0 ~= f:GetBagItemFamily(bagID)
+end
+
+function f:GetBagItemFamily(bagID)
+	return GetItemFamily(GetBagName(bagID))
 end
 
 local events = {
