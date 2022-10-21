@@ -30,7 +30,6 @@ function f:BAG_UPDATE(event, bagSlot)
 			local itemLink = select(7, GetContainerItemInfo(bagSlot, i))
 			local itemID   = GetContainerItemID(bagSlot, i)
 			C_NewItems.RemoveNewItem(bagSlot, i)
-			print("Looted:", itemLink, ".")
 
 			-- If we looted a bag, we don't want to place in a bagSlot, or it
 			-- will try to equip the bag.
@@ -46,7 +45,7 @@ function f:BAG_UPDATE(event, bagSlot)
 				if bagID <= bagSlot then
 					break
 				-- Otherwise we try to place it in the new bag.
-				elseif f:CanPlaceInBag(itemLink, bagID, lootNum[bagID]) then
+				elseif f:CanPlaceInBag(itemID, bagID, lootNum[bagID]) then
 					-- GetContainerNumFreeSlots() doesn't seem to update
 					-- inbetween calls in a single update, so we need to
 					-- keep track of how much we looted this update so we put
@@ -81,7 +80,12 @@ function f:IsProfessionBag(bagID)
 end
 
 function f:GetBagItemFamily(bagID)
-	return GetItemFamily(GetBagName(bagID))
+	if bagID == 0 then
+		return 0
+	end
+	local invID  = ContainerIDToInventoryID(bagID)
+	local itemID = GetInventoryItemID("player", invID)
+	return GetItemFamily(itemID)
 end
 
 local events = {
