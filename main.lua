@@ -34,27 +34,26 @@ function f:BAG_UPDATE(event, bagSlot)
 			-- If we looted a bag, we don't want to place in a bagSlot, or it
 			-- will try to equip the bag.
 			if f:IsBag(itemID) then
-				return
-			end
-
-			for newBag = 23, 20, -1 do
-				local bagID = newBag - 19
-
-				-- If we'd put the item in a bag that is to the right of the
-				-- current one, or in the current one, we just abort.
-				if bagID <= bagSlot then
-					break
-				-- Otherwise we try to place it in the new bag.
-				elseif f:CanPlaceInBag(itemID, bagID, lootNum[bagID]) then
-					-- GetContainerNumFreeSlots() doesn't seem to update
-					-- inbetween calls in a single update, so we need to
-					-- keep track of how much we looted this update so we put
-					-- items in the correct bags.
-					lootNum[bagID] = lootNum[bagID] + 1
-					C_NewItems.RemoveNewItem(bagSlot, i)
-					PickupContainerItem(bagSlot, i)
-					PutItemInBag(newBag)
-					break
+				--
+			else
+				for newBag = 23, 20, -1 do
+					local bagID = newBag - 19
+					-- If we'd put the item in a bag that is to the right of
+					-- the current one, or in the current one, we just abort.
+					if bagID <= bagSlot then
+						break
+					-- Otherwise we try to place it in the new bag.
+					elseif f:CanPlaceInBag(itemID, bagID, lootNum[bagID]) then
+						-- GetContainerNumFreeSlots() doesn't seem to update
+						-- inbetween calls in a single update, so we need to
+						-- keep track of how much we looted this update so we
+						-- put items in the correct bags.
+						lootNum[bagID] = lootNum[bagID] + 1
+						C_NewItems.RemoveNewItem(bagSlot, i)
+						PickupContainerItem(bagSlot, i)
+						PutItemInBag(newBag)
+						break
+					end
 				end
 			end
 		end
