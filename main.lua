@@ -22,8 +22,15 @@ function f:BAG_UPDATE(event, bagSlot)
 	for i = 0, GetContainerNumSlots(bagSlot), 1 do
 		if C_NewItems.IsNewItem(bagSlot, i) then
 			local itemLink = select(7, GetContainerItemInfo(bagSlot, i))
+			local itemID   = GetContainerItemID(bagSlot, i)
 			C_NewItems.RemoveNewItem(bagSlot, i)
 			print("Looted:", itemLink, ".")
+
+			-- If we looted a bag, we don't want to place in a bagSlot, or it
+			-- will try to equip the bag.
+			if f:IsBag(itemID) then
+				return
+			end
 
 			for newBag = 23, 20, -1 do
 				local bagID = newBag - 19
@@ -57,6 +64,10 @@ function f:CanPlaceInBag(item, bagID, lootNum)
 	-- allows us to place the item we want to put in there.
 	return freeSlots > lootNum
 	       and (bagFamily == 0 or bit.band(bagFamily, itemFamily) ~= 0)
+end
+
+function f:IsBag(itemID)
+	return "INVTYPE_BAG" == select(9, GetItemInfo(itemID))
 end
 
 local events = {
