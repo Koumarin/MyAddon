@@ -5,4 +5,5 @@
 ## Author: Koumarin
 
 main.lua
+random-mount.lua
 tooltip.lua
