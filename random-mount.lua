@@ -18,7 +18,7 @@ function CallRandomMount(mountType)
 		M = F:Filter(M, p(mountType))  -- mount type, look for that type.
 	elseif F:CanFly() then             -- Otherwise, if we can fly,
 		M = F:Filter(M, p(0x2))        -- we take only flying mounts.
-	elseif IsSwimming() then           -- If we are swimming,
+	elseif IsSubmerged() then          -- If we are underwater,
 		M = F:Filter(M, p(0x8))        -- we take only water mounts.
 	else
 		M = F:Filter(M, function(elt)
