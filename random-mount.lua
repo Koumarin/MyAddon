@@ -32,7 +32,7 @@ end
 
 function F:CanFly()
 	-- 34090 is Expert Riding.
-	return FindSpellBookSlotBySpellID(34090) and IsFlyableArea()
+	return FindSpellBookSlotBySpellID(90267) and IsFlyableArea()
 end
 
 function F:Filter(A, p)
