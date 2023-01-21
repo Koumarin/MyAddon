@@ -21,12 +21,6 @@ end
 function f:BAG_UPDATE(event, bagSlot)
 	local lootNum = {0, 0, 0, 0, 0}    -- No of looted items/bag this update.
 
-	if bagFreeSlots[bagSlot] then
-		wipe(bagFreeSlots[bagSlot])
-	end
-	bagFreeSlots[bagSlot] = GetContainerFreeSlots(bagSlot)
-	-- If the bag that received an update is a profession bag, we know that
-	-- the item is in its correct place. Profession bags have higher priority.
 	if f:IsProfessionBag(bagSlot) then
 		return
 	end
@@ -42,9 +36,13 @@ function f:BAG_UPDATE(event, bagSlot)
 			local itemID   = GetContainerItemID(bagSlot, i)
 			C_NewItems.RemoveNewItem(bagSlot, i)
 
+			-- If the new item isn't in a previously free slot, we know it was
+			-- looted to a pre-existing stack, so we keep it where it is.
+			if not tContains(bagFreeSlots[bagSlot], i) then
+				--
 			-- If we looted a bag, we don't want to place in a bagSlot, or it
 			-- will try to equip the bag.
-			if f:IsBag(itemID) then
+			elseif f:IsBag(itemID) then
 				--
 			else
 				for newBag = 4, 1, -1 do
@@ -69,6 +67,10 @@ function f:BAG_UPDATE(event, bagSlot)
 			end
 		end
 	end
+
+	f:UpdateBagFreeSlots(bagSlot)
+	-- If the bag that received an update is a profession bag, we know that
+	-- the item is in its correct place. Profession bags have higher priority.
 end
 
 function f:CanPlaceInBag(item, bagID, lootNum)
@@ -89,15 +91,6 @@ function f:IsProfessionBag(bagID)
 	return 0 ~= f:GetBagItemFamily(bagID)
 end
 
-function f:ElementInTable(element, table)
-	for _, value in ipairs(table) do
-		if value == element then
-			return true
-		end
-	end
-	return false
-end
-
 function f:GetBagItemFamily(bagID)
 	if bagID == 0 then
 		return 0
@@ -105,6 +98,13 @@ function f:GetBagItemFamily(bagID)
 	local invID  = ContainerIDToInventoryID(bagID)
 	local itemID = GetInventoryItemID("player", invID)
 	return GetItemFamily(itemID)
+end
+
+function f:UpdateBagFreeSlots(bagID)
+	if bagFreeSlots[bagID] then
+		wipe(bagFreeSlots[bagID])
+	end
+	bagFreeSlots[bagID] = GetContainerFreeSlots(bagID)
 end
 
 local events = {
