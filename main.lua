@@ -21,13 +21,13 @@ end
 function f:BAG_UPDATE(event, bagSlot)
 	local lootNum = {0, 0, 0, 0, 0}    -- No of looted items/bag this update.
 
-	if f:IsProfessionBag(bagSlot) then
-		return
-	end
-
-	if CursorHasItem() or SpellIsTargeting() then
-		print("Cursor busy, can't loot to leftmost.")
-		return
+	if bagSlot > 5 then                -- Slots greater than 5 are bank bags,
+		return                         -- which we ignore;
+	elseif f:IsProfessionBag(bagSlot) then -- if our item is in a profession
+		return                             -- bag, it's in the correct place;
+	elseif CursorHasItem() or SpellIsTargeting() then -- And if our cursor is
+		print("Cursor busy, can't loot to leftmost.") -- is busy, we cannot do
+		return                                        -- anything.
 	end
 
 	for i = 0, GetContainerNumSlots(bagSlot), 1 do
@@ -57,7 +57,8 @@ function f:BAG_UPDATE(event, bagSlot)
 						-- inbetween calls in a single update, so we need to
 						-- keep track of how much we looted this update so we
 						-- put items in the correct bags.
-						lootNum[newBag] = lootNum[newBag] + 1
+						lootNum[newBag]  = lootNum[newBag] + 1
+						lootNum[bagSlot] = lootNum[bagSlot] - 1
 						C_NewItems.RemoveNewItem(bagSlot, i)
 						PickupContainerItem(bagSlot, i)
 						PutItemInBag(invID)
