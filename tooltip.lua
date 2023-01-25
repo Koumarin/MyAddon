@@ -26,3 +26,5 @@ end
 
 GameTooltip:HookScript("OnTooltipSetItem", OnTooltipSetItem)
 GameTooltip:HookScript("OnTooltipCleared", OnTooltipCleared)
+ItemRefTooltip:HookScript("OnTooltipSetItem", OnTooltipSetItem)
+ItemRefTooltip:HookScript("OnTooltipCleared", OnTooltipCleared)
