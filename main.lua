@@ -57,8 +57,8 @@ function f:BAG_UPDATE(event, bagSlot)
 						-- inbetween calls in a single update, so we need to
 						-- keep track of how much we looted this update so we
 						-- put items in the correct bags.
-						lootNum[newBag]  = lootNum[newBag] + 1
-						lootNum[bagSlot] = lootNum[bagSlot] - 1
+						lootNum[newBag]      = lootNum[newBag] + 1
+						lootNum[bagSlot + 1] = lootNum[bagSlot + 1] - 1
 						C_NewItems.RemoveNewItem(bagSlot, i)
 						PickupContainerItem(bagSlot, i)
 						PutItemInBag(invID)
